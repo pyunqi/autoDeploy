@@ -1,0 +1,6 @@
+1. deployNodes.py, constants.py, ThreadPool.py
+这3个文件是执行远程部署的入口。
+多线程的方式运行节点上的部署Redis的python脚本。
+执行之前需要在constants.py里面设置参数
+2.setUpNode.py, commands.py 是放在远程节点上的部署脚本。
+
