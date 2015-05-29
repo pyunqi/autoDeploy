@@ -30,31 +30,36 @@ def getSSHConnection(ip):
     return sshConnection
 
 #Execute mutiple ssh commands remotely sample
-def executeSSHCmds(sshConnection,cmd):
+def executeSSHCmdsInBackend(sshConnection):
     channel = sshConnection.invoke_shell()
     stdin = channel.makefile('wb')
     stdout = channel.makefile('rb')
-    h = 'cd .ssh'
-    l = 'ls'
-    s = 'exit'
+    s = 'redis-cli save'
+    c = 'cp /var/opt/dump.rdb _back_dump.rdb'
+    e = 'exit'
     ok = '''
     %s
     %s
     %s
-    '''%(h,l,s)
+    '''%(s,c,e)
     stdin.write(ok)
-    print stdout.read()
     stdout.close()
     stdin.close()
     sshConnection.close()
-    exit()
-#Execute ssh command remotely
+    
+# Execute ssh command remotely
 def executeSSHCmd(sshConnection,cmd):
     stdin, stdout, stderr = sshConnection.exec_command(cmd)
     out = stdout.readlines()
     return out
 
+# Save backend server Redis cache to file.
+def saveBackend(ip):
+    sshConnection = getSSHConnection(ip)
+    executeSSHCmdsInBackend(sshConnection)
+  
 def setupNode(args):
+
     ip = args[0]
     cmds = args[1]
     sshConnection = getSSHConnection(ip)
@@ -64,6 +69,9 @@ def setupNode(args):
     print result
 
 if __name__=='__main__':
+    # Execute redis-clis save in admin backend
+    saveBackend (adminBackend);
+    # Execute nodes setup scripts
     cmds = runSetupNode
     ips = []
     #Generate tasks list
