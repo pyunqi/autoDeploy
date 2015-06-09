@@ -13,4 +13,9 @@ copyRedisRDB = 'scp -i node root@10.170.216.102:/var/opt/dump.rdb /var/opt/dump.
 #Start Redis
 startRedis = 'redis-server /etc/redis/redisi.conf'
 
-cmds = [cmdGetInternalIp,updateInternalIpForRedis,stopRedis,copyRedisRDB,startRedis]
+setupCmds = [cmdGetInternalIp,updateInternalIpForRedis,stopRedis,copyRedisRDB,startRedis]
+
+#Clean node
+rmRedisiConf = 'rm -f /etc/redis/redisi.conf'
+rmDump =  'rm -f /var/opt/dump.rdb' 
+cleanCmds = [stopRedis,rmRedisiConf,rmDump]

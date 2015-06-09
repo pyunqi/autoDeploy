@@ -1,6 +1,18 @@
-1. deployNodes.py, constants.py, ThreadPool.py
-这3个文件是执行远程部署的入口。
-多线程的方式运行节点上的部署Redis的python脚本。
-执行之前需要在constants.py里面设置参数
-2.setUpNode.py, commands.py 是放在远程节点上的部署脚本。
+部署方法：
+
+复制 cleanNode.py, commands.py, setupNode.py 到节点服务器
+对应节点，需要相应的Redis配置文件在 /etc/redis/redis.conf, 并且里面包含 "bindipwithinternalip" 用来替换成真实内部Ip
+
+执行顺序：
+
+1. cleanAllNodes.py ， 清理节点的文件，初始化
+2. cleanAdmin.py 清理后台服务器的redis server 内容
+3. 进入后台服务器建立考试，直到生成试卷结束
+4. saveAdmin.py , 保存redis server 到dump.rdb文件
+5. deployNodes.py 开始部署所有节点服务器
+6. 生成考生登录信息 http://123.56.109.9/importUser.php
+7. 登陆服务器导入考生信息 http://onlinetest.disocial.cn/importu.php
+
+
+
 

@@ -10,15 +10,6 @@ from ThreadPool import *
 # If set to True , will use node address
 useNodeName = True
 
-def getSSHConnectionUP(ip,username,passwd):
-    try :
-        sshConnection = paramiko.SSHClient()
-        sshConnection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        sshConnection.connect(ip,22,username,passwd,timeout=5)
-    except :
-        print 'can not login'
-    return sshConnection
-
 def getSSHConnection(ip):
     try :
         sshConnection = paramiko.SSHClient()
@@ -29,23 +20,6 @@ def getSSHConnection(ip):
         print 'can not login'
     return sshConnection
 
-#Execute mutiple ssh commands remotely sample
-def executeSSHCmdsInBackend(sshConnection):
-    channel = sshConnection.invoke_shell()
-    stdin = channel.makefile('wb')
-    stdout = channel.makefile('rb')
-    s = 'redis-cli save'
-    c = 'cp /var/opt/dump.rdb _back_dump.rdb'
-    e = 'exit'
-    ok = '''
-    %s
-    %s
-    %s
-    '''%(s,c,e)
-    stdin.write(ok)
-    stdout.close()
-    stdin.close()
-    sshConnection.close()
     
 # Execute ssh command remotely
 def executeSSHCmd(sshConnection,cmd):
@@ -53,26 +27,20 @@ def executeSSHCmd(sshConnection,cmd):
     out = stdout.readlines()
     return out
 
-# Save backend server Redis cache to file.
-def saveBackend(ip):
-    sshConnection = getSSHConnection(ip)
-    executeSSHCmdsInBackend(sshConnection)
   
-def setupNode(args):
-
+def getNodeList(args):
     ip = args[0]
     cmds = args[1]
     sshConnection = getSSHConnection(ip)
     # Execute Python "Setup Node" script
     result = executeSSHCmd(sshConnection,cmds)
     sshConnection.close()
-    print 'setup',ip,result
+    print result
 
 if __name__=='__main__':
-    # Execute redis-clis save in admin backend
-    # saveBackend (adminBackend);//这个命令有问题，不能执行，需要手动去服务器端执行下。
-    # Execute nodes setup scripts
-    cmds = runSetupNode
+    getips = "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'"
+    checkDumps = "ll /var/opt/dump.rdb"
+    cleanRedis = "redis-cli flushall"
     ips = []
     #Generate tasks list
     jobs = Queue.Queue()
@@ -85,10 +53,7 @@ if __name__=='__main__':
         ips = nodeIps
 
     for i in range(0,nodeNumber):
-        jobs.put((setupNode, (ips[i],cmds)))
-
-    # while not jobs.empty():
-    #     print jobs.get()
+        jobs.put((getNodeList, (ips[i],cleanRedis)))
 
     work_manager =  WorkManager(jobs, threadNum)
     work_manager.wait_allcomplete()
