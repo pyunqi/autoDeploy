@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 #!/usr/bin/python
-
+# 修改所有服务器的 session timeout 到60分钟
 import paramiko
 import threading
 from constants import *
