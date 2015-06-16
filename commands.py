@@ -4,6 +4,7 @@ cmdGetInternalIp = "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}
 #Replace redis.conf bind ip with current server internal ip and local ip
 #keyword is bindipwithinternalip
 updateInternalIpForRedis = "sed 's/bindipwithinternalip/realinternalip/g' /etc/redis/redis.conf > /etc/redis/redisi.conf"
+
 #Clear Redis
 # clearRedis = "redis-cli flushall"
 #Stop Redis
