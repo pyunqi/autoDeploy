@@ -14,5 +14,5 @@
 7. 登陆服务器导入考生信息 http://onlinetest.disocial.cn/importu.php
 
 
-
+modifyNodesSessionTimeout.py 修改所有节点的session timeout 时间
 
